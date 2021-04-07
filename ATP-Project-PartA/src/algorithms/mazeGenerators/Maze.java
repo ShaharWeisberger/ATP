@@ -1,6 +1,12 @@
 package algorithms.mazeGenerators;
 
-public class Maze {
+import algorithms.search.AState;
+import algorithms.search.ISearchable;
+import algorithms.search.MazeState;
+
+import java.util.ArrayList;
+
+public class Maze{
 
     private  int[][] maze;
     private  int rows;
@@ -8,12 +14,21 @@ public class Maze {
     private Position startPosition;
     private Position GoalPosition;
 
+
     public Maze(int[][] maze, int rows, int columns, Position startPosition, Position goalPosition) {
         this.maze = maze;
         this.rows = rows;
         this.columns = columns;
         this.startPosition = startPosition;
         GoalPosition = goalPosition;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
     }
 
     public Position getStartPosition() {
@@ -41,4 +56,5 @@ public class Maze {
             System.out.println();
         }
     }
+
 }

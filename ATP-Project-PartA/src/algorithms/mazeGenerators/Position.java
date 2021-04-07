@@ -13,6 +13,9 @@ public class Position {
     public int getRowIndex() { return  rowIndex; }
     public int getColumnIndex() { return  columnIndex; }
 
+    public String getKey(){
+        return ""+getRowIndex() +"$"+getColumnIndex();
+    }
     public String toString() { return "{" + rowIndex + "," + columnIndex + "}"; }
 
 }

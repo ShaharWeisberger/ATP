@@ -1,4 +1,17 @@
 package algorithms.search;
 
-public class MazeState {
+import algorithms.mazeGenerators.Position;
+
+public class MazeState extends AState{
+
+    private Position position;
+    public MazeState(String pos, AState cameFrom, int cost) {
+        super(pos, cameFrom, cost);
+        String[] arrS= getKey().split("\\$");
+        position = new Position(Integer.parseInt(arrS[0]), Integer.parseInt(arrS[1]));
+    }
+
+    public Position GetPosition(){
+        return position;
+    }
 }
