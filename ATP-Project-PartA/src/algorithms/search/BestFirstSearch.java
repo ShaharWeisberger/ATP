@@ -12,7 +12,7 @@ public class BestFirstSearch extends ASearchingAlgorithm {
     }
 
     @Override
-    public void handleState(AState state) {
+    public boolean handleState(AState state) {
         if (!isInClosedList(state)){
             if (!isInOpenList(state)){
                 addToOpenList(state);
@@ -24,7 +24,7 @@ public class BestFirstSearch extends ASearchingAlgorithm {
                 }
             }
         }
+        return false;
     }
-
 }
 

@@ -8,8 +8,8 @@ public abstract class AState  {
     private AState cameFrom;
     private int cost;
     private int priorityCounter = 0;
-    private boolean inOpenList;
-    private boolean inCloseList;
+    private boolean inOpenList; // true when the state is in openList.
+    private boolean inCloseList; // true when the state is in closeList.
 
     public AState(String name, AState cameFrom, int cost) {
         this.key = name;
@@ -30,7 +30,6 @@ public abstract class AState  {
     public void setInCloseList(boolean inCloseList) {
         this.inCloseList = inCloseList;
     }
-
 
     @Override
     public boolean equals(Object o) {

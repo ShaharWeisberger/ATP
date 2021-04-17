@@ -31,5 +31,6 @@ public class RunSearchOnMaze {
         for (int i = 0; i < solutionPath.size(); i++) {
             System.out.println(String.format("%s. %s",i,solutionPath.get(i)));
         }
+        System.out.println("cost = " + (solutionPath.get(solutionPath.size() -1).getCost()));
     }
 }

@@ -4,14 +4,16 @@ import java.util.*;
 
 public abstract class ASearchingAlgorithm implements ISearchingAlgorithm {
     public abstract int compareState(AState state1, AState state2);
-    public abstract void handleState(AState state);
+
+    public abstract boolean handleState(AState state);
 
     protected PriorityQueue<AState> openList;
     private int visitedNode;
+    //stateHash enables fast access to AState's by their key.
     private HashMap<String, AState> stateHash;
     private String nameOfAlgo;
     private AState goalState;
-    private int openListCounter=0;
+    private int openListCounter = 0;
 
 
     public ASearchingAlgorithm(String name) {
@@ -35,7 +37,7 @@ public abstract class ASearchingAlgorithm implements ISearchingAlgorithm {
         return goalState;
     }
 
-    public void setGoalState(AState state){
+    public void setGoalState(AState state) {
         goalState = state;
     }
 
@@ -43,6 +45,8 @@ public abstract class ASearchingAlgorithm implements ISearchingAlgorithm {
         return visitedNode;
     }
 
+    //The main search engine.
+    //Runs differently on each algorithm by applying its specific handleState method and PriorityQueue compare function.
     @Override
     public AState search(ISearchable s) {
         setGoalState(s.getGoalState());
@@ -56,10 +60,10 @@ public abstract class ASearchingAlgorithm implements ISearchingAlgorithm {
             }
             ArrayList<AState> arrL = s.getAllSuccessors(curr);
             for (AState next : arrL) {
-                if (next.equals(getGoalState())) {
+                boolean canStop = handleState(next);
+                if (canStop && next.equals(getGoalState())) {
                     return next;
                 }
-                handleState(next);
             }
         }
         return null;
@@ -75,13 +79,13 @@ public abstract class ASearchingAlgorithm implements ISearchingAlgorithm {
     }
 
     public boolean isInClosedList(AState s) {
-        if (s == null||!stateHash.containsKey(s.getKey()))
+        if (s == null || !stateHash.containsKey(s.getKey()))
             return false;
         return stateHash.get(s.getKey()).isInCloseList();
     }
 
     public boolean isInOpenList(AState s) {
-        if (s == null||!stateHash.containsKey(s.getKey()))
+        if (s == null || !stateHash.containsKey(s.getKey()))
             return false;
         return stateHash.get(s.getKey()).isInOpenList();
     }
@@ -91,18 +95,12 @@ public abstract class ASearchingAlgorithm implements ISearchingAlgorithm {
             return null;
         }
         visitedNode++;
-        for (AState next : openList) {
-            //  System.out.println(String.format("currently in openList %d  ", next.getPriorityCounter()));
-        }
-        //System.out.println(String.format(" before poll"));
-
         AState state = openList.poll();
-        //System.out.println(String.format(" after poll"));
-
         state.setInOpenList(false);
         return state;
     }
 
+    //Adds to list with updated counter, adds to stateHash if not already there.
     protected void addToOpenList(AState state) {
         state.setPriorityCounter(openListCounter);
         openListCounter++;
@@ -114,8 +112,8 @@ public abstract class ASearchingAlgorithm implements ISearchingAlgorithm {
         }
     }
 
-    public AState getStateFromHash(AState s){
-        if(s == null||!stateHash.containsKey(s.getKey()))
+    public AState getStateFromHash(AState s) {
+        if (s == null || !stateHash.containsKey(s.getKey()))
             return null;
         return stateHash.get(s.getKey());
     }
@@ -125,7 +123,5 @@ public abstract class ASearchingAlgorithm implements ISearchingAlgorithm {
     public Solution solve(ISearchable domain) {
         return new Solution(search(domain));
     }
-
-
 }
 

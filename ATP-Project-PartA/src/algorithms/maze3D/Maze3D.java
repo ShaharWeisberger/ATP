@@ -20,6 +20,10 @@ public class Maze3D {
         this.GoalPosition = goalPosition;
     }
 
+    public int[][][] getMaze3d() {
+        return maze3d;
+    }
+
     public int[][][] getMap() {
         return maze3d;
     }

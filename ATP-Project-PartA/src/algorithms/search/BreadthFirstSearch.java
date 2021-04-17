@@ -17,10 +17,11 @@ public class BreadthFirstSearch extends ASearchingAlgorithm {
     }
 
     @Override
-    public void handleState(AState state) {
+    public boolean handleState(AState state) {
         if (!isInClosedList(state)&&!isInOpenList(state)) {
             addToOpenList(state);
         }
+        return true;
     }
 
 }

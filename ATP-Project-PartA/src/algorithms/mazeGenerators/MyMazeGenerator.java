@@ -12,14 +12,12 @@ public class MyMazeGenerator extends AMazeGenerator{
         ArrayList<Position> unvisited = new ArrayList<>();
 
         int[][] maze = new int[rows][columns];
-
         //create a maze with walls only
         for (int i = 0; i < rows; i++){
             for (int j = 0; j < columns; j++){
                 maze[i][j] = 1;
             }
         }
-
         //random cell
         int x = new Random().nextInt(rows);
         int y = new Random().nextInt(columns);
@@ -72,7 +70,6 @@ public class MyMazeGenerator extends AMazeGenerator{
 
             if (unvisited.size() == 1)
             {
-
                 maze[pos.getRowIndex()][pos.getColumnIndex()] = 0;
 
                 if (unvisited.get(0).getRowIndex() >= 0 && unvisited.get(0).getRowIndex() < rows && unvisited.get(0).getColumnIndex() >= 0 && unvisited.get(0).getColumnIndex() < columns)
@@ -90,8 +87,6 @@ public class MyMazeGenerator extends AMazeGenerator{
                 }
             }
             neighbors.remove(randomNeighbor);
-
-
         }
         //start pos
         int start1 = new Random().nextInt(rows);

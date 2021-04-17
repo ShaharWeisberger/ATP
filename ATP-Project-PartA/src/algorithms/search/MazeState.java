@@ -10,7 +10,6 @@ public class MazeState extends AState{
         String[] arrS= getKey().split("\\$");
         position = new Position(Integer.parseInt(arrS[0]), Integer.parseInt(arrS[1]));
     }
-
     public Position GetPosition(){
         return position;
     }

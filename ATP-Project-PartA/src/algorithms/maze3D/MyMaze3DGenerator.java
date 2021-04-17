@@ -36,16 +36,12 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
         //3D neighbors
         if (d+1 < depth) neighbors3D.add(new Position3D(d+1,x,y));
         if (d-1 >= 0) neighbors3D.add(new Position3D(d-1,x,y));
-
-
-
         while (!neighbors3D.isEmpty())
         {
             //random neighbor
             int randomNeighbor = new Random().nextInt(neighbors3D.size());
             Position3D pos = new Position3D(neighbors3D.get(randomNeighbor).getDepthIndex(),neighbors3D.get(randomNeighbor).getRowIndex(),neighbors3D.get(randomNeighbor).getColumnIndex());
             unvisited3D.clear();
-
 
             if (pos.getRowIndex() + 1 < row && Maze3D[pos.getDepthIndex()][pos.getRowIndex() + 1][pos.getColumnIndex()] == 0)
                 unvisited3D.add(new Position3D(pos.getDepthIndex(),pos.getRowIndex() - 1, pos.getColumnIndex()));
@@ -96,8 +92,6 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
                 }
             }
             neighbors3D.remove(randomNeighbor);
-
-
         }
         //start pos
         int start1 = new Random().nextInt(depth);
