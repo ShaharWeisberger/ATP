@@ -12,7 +12,7 @@ public class SearchableMaze implements ISearchable{
 
     public SearchableMaze(Maze maze1) {
         maze = maze1;
-        startState = new MazeState(maze.getStartPosition().getKey(), null, 0);
+        startState = new MazeState(maze.getStartPosition().getKey(), null, 0); // aaa
         goalState = new MazeState(maze.getGoalPosition().getKey(), null, Integer.MAX_VALUE);
     }
 
@@ -58,7 +58,7 @@ public class SearchableMaze implements ISearchable{
                 int cost = moveCost(y, x, u, v);
                 if (cost != -1){
                     Position position = new Position(u, v);
-                    stateList.add(new MazeState(position.getKey(), current, cost));
+                    stateList.add(new MazeState(position.getKey(), current, cost + current.getCost()));
                     //System.out.format("In u = %d v = %d getAllSuccessors move = %s \n" ,u,v, position.getKey());
                 }
             }
@@ -67,3 +67,4 @@ public class SearchableMaze implements ISearchable{
     }
 
 }
+
