@@ -13,7 +13,6 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
         ArrayList<Position3D> unvisited3D = new ArrayList<>();
 
         int[][][] Maze3D = new int[depth][row][column];
-
         //create a maze with walls only
         for (int i = 0; i < depth; i++){
             for (int j = 0; j < row; j++){
@@ -22,7 +21,6 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
                 }
             }
         }
-
         //random cell
         int d = new Random().nextInt(depth);
         int x = new Random().nextInt(row);
@@ -41,7 +39,7 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
             //random neighbor
             int randomNeighbor = new Random().nextInt(neighbors3D.size());
             Position3D pos = new Position3D(neighbors3D.get(randomNeighbor).getDepthIndex(),neighbors3D.get(randomNeighbor).getRowIndex(),neighbors3D.get(randomNeighbor).getColumnIndex());
-            unvisited3D.clear();
+            //unvisited3D.clear();
 
             if (pos.getRowIndex() + 1 < row && Maze3D[pos.getDepthIndex()][pos.getRowIndex() + 1][pos.getColumnIndex()] == 0)
                 unvisited3D.add(new Position3D(pos.getDepthIndex(),pos.getRowIndex() - 1, pos.getColumnIndex()));

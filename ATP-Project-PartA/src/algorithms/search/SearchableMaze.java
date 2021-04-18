@@ -5,7 +5,7 @@ import algorithms.mazeGenerators.Position;
 
 import java.util.ArrayList;
 
-public class SearchableMaze implements ISearchable{
+public class SearchableMaze implements ISearchable {
     private MazeState startState;
     private MazeState goalState;
     private Maze maze;
@@ -47,16 +47,15 @@ public class SearchableMaze implements ISearchable{
         int x = current.GetPosition().getColumnIndex();
         int y = current.GetPosition().getRowIndex();
         //System.out.format("In getAllSuccessors x = %d y = %d  current = %s\n", x, y, s.getKey());
-
         ArrayList<AState> stateList = new ArrayList<>();
-        for (int i = -1; i <= 1; i++){
-            for (int j = -1; j <= 1; j++){
-                if (i == 0 && j==0)
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0)
                     continue;
-                int u = y+i;
-                int v = x+j;
+                int u = y + i;
+                int v = x + j;
                 int cost = moveCost(y, x, u, v);
-                if (cost != -1){
+                if (cost != -1) {
                     Position position = new Position(u, v);
                     stateList.add(new MazeState(position.getKey(), current, cost + current.getCost()));
                     //System.out.format("In u = %d v = %d getAllSuccessors move = %s \n" ,u,v, position.getKey());
@@ -65,6 +64,5 @@ public class SearchableMaze implements ISearchable{
         }
         return stateList;
     }
-
 }
 
