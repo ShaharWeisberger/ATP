@@ -3,6 +3,7 @@ package algorithms.maze3D;
 import algorithms.mazeGenerators.Maze;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MyMaze3DGenerator extends AMaze3DGenerator {
@@ -16,7 +17,7 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
         //create a maze with walls only
         for (int i = 0; i < depth; i++){
             for (int j = 0; j < row; j++){
-                for (int k = 0; j < column; j++){
+                for (int k = 0; k < column; k++){
                     Maze3D[i][j][k] = 1;
                 }
             }
@@ -38,8 +39,9 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
         {
             //random neighbor
             int randomNeighbor = new Random().nextInt(neighbors3D.size());
-            Position3D pos = new Position3D(neighbors3D.get(randomNeighbor).getDepthIndex(),neighbors3D.get(randomNeighbor).getRowIndex(),neighbors3D.get(randomNeighbor).getColumnIndex());
-            //unvisited3D.clear();
+            Position3D pos = new Position3D(neighbors3D.get(randomNeighbor).getDepthIndex(),
+                    neighbors3D.get(randomNeighbor).getRowIndex(),neighbors3D.get(randomNeighbor).getColumnIndex());
+            unvisited3D.clear();
 
             if (pos.getRowIndex() + 1 < row && Maze3D[pos.getDepthIndex()][pos.getRowIndex() + 1][pos.getColumnIndex()] == 0)
                 unvisited3D.add(new Position3D(pos.getDepthIndex(),pos.getRowIndex() - 1, pos.getColumnIndex()));
@@ -63,10 +65,10 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
 
             if (unvisited3D.size() == 1)
             {
-
                 Maze3D[pos.getDepthIndex()][pos.getRowIndex()][pos.getColumnIndex()] = 0;
 
-                if (unvisited3D.get(0).getRowIndex() >= 0 && unvisited3D.get(0).getRowIndex() < row && unvisited3D.get(0).getColumnIndex() >= 0 && unvisited3D.get(0).getColumnIndex() < column && unvisited3D.get(0).getDepthIndex() >= 0 && unvisited3D.get(0).getDepthIndex() < depth)
+                if (unvisited3D.get(0).getRowIndex() >= 0 && unvisited3D.get(0).getRowIndex() < row && unvisited3D.get(0).getColumnIndex() >= 0
+                        && unvisited3D.get(0).getColumnIndex() < column && unvisited3D.get(0).getDepthIndex() >= 0 && unvisited3D.get(0).getDepthIndex() < depth)
                 {
                     Maze3D[unvisited3D.get(0).getDepthIndex()][unvisited3D.get(0).getRowIndex()][unvisited3D.get(0).getColumnIndex()] = 0;
                     // 3.2.2 Add the neighboring walls of the cell to the wall list.
@@ -91,31 +93,60 @@ public class MyMaze3DGenerator extends AMaze3DGenerator {
             }
             neighbors3D.remove(randomNeighbor);
         }
-        //start pos
-        int start1 = new Random().nextInt(depth);
-        int start2 = new Random().nextInt(row);
-        int start3 = new Random().nextInt(column);
-        while(Maze3D[start1][start2][start3] == 1)
+
+
+        //creates A list of possible start and goal Positions.
+        List<Position3D> possible = new ArrayList<>();
+        int k;
+        for (k = 0 ; k< Maze3D.length ; k++)
         {
-            start1 = new Random().nextInt(depth);
-            start2 = new Random().nextInt(row);
-            start2 = new Random().nextInt(column);
+            int i;
+            for (i = 0 ; i < Maze3D[0][0].length-1 ; i++)
+            {
+                if(Maze3D[k][0][i] == 0)
+                    possible.add(new Position3D(k , 0 ,i));
+            }
+            for (i = 0 ; i < Maze3D[0].length ; i++)
+            {
+                if(Maze3D[k][i][0] == 0)
+                    possible.add(new Position3D(k,i , 0));
+            }
 
+            for (i = 0 ; i < Maze3D[0][0].length ; i++)
+            {
+                if(Maze3D[k][Maze3D[0].length-1][i] == 0)
+                    possible.add(new Position3D(k , Maze3D[0].length-1 , i));
+            }
+
+            for (i = 0 ; i < Maze3D[0].length-1; i++)
+            {
+                if(Maze3D[k][i][Maze3D[0][0].length-1] == 0)
+                    possible.add(new Position3D(k,i, Maze3D[0][0].length-1));
+            }
         }
-        Position3D start = new Position3D(start1,start2,start3);
 
-        //goal pos
-        int goal1 = new Random().nextInt(depth);
-        int goal2 = new Random().nextInt(row);
-        int goal3 = new Random().nextInt(column);
-
-        while(Maze3D[goal1][goal2][goal3] == 1 || start.getDepthIndex()==goal1 || start.getRowIndex()==goal2 || start.getColumnIndex()==goal3)
-        {
-            goal1 = new Random().nextInt(depth);
-            goal2 = new Random().nextInt(row);
-            goal3 = new Random().nextInt(column);
+        // Sets a start and goal Positions that are not neighbors.
+        Random rd = new Random();
+        int start2 = rd.nextInt(possible.size());
+        Position3D start = possible.get(start2);
+        //Maze3D = possible.get(start);
+        possible.remove(start2);
+        Position3D goalPos = null;
+        boolean far_from_me = false;
+        while (!far_from_me){
+            int goal = rd.nextInt(possible.size());
+            goalPos = possible.get(goal);
+            if ((goalPos.getDepthIndex()+1 == start.getDepthIndex() && goalPos.getRowIndex() == start.getRowIndex() && goalPos.getColumnIndex() == start.getColumnIndex())
+                    || (goalPos.getDepthIndex()-1 == start.getDepthIndex() && goalPos.getRowIndex() == start.getRowIndex() && goalPos.getColumnIndex() == start.getColumnIndex()) ||
+                    (goalPos.getDepthIndex() == start.getDepthIndex() && goalPos.getRowIndex()+1 == start.getRowIndex() && goalPos.getColumnIndex() == start.getColumnIndex()) ||
+                    (goalPos.getDepthIndex() == start.getDepthIndex() && goalPos.getRowIndex()-1 == start.getRowIndex() && goalPos.getColumnIndex() == start.getColumnIndex())
+            || (goalPos.getDepthIndex() == start.getDepthIndex() && goalPos.getRowIndex() == start.getRowIndex() && goalPos.getColumnIndex()+1 == start.getColumnIndex())
+            || (goalPos.getDepthIndex() == start.getDepthIndex() && goalPos.getRowIndex() == start.getRowIndex() && goalPos.getColumnIndex()-1 == start.getColumnIndex())){
+                far_from_me = false;
+            }
+            else
+                far_from_me = true;
         }
-        Position3D goal = new Position3D(goal1,goal2,goal3);
-        return new Maze3D(Maze3D,depth,row,column,start,goal);
+        return new Maze3D(Maze3D,depth,row,column,start,goalPos);
     }
 }

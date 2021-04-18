@@ -49,21 +49,30 @@ public class Maze3D {
     }
 
     public void print(){
-
-        for (int d = 0; d < depth; d++) {
-            System.out.println("depth = " + d);
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < columns; j++) {
-                    if (startPosition.getDepthIndex() == d && startPosition.getRowIndex() == i && startPosition.getColumnIndex() == j)
-                        System.out.print("S");
-                    else if (GoalPosition.getDepthIndex() == d && GoalPosition.getRowIndex() == i && GoalPosition.getColumnIndex() == j)
-                        System.out.print("E");
-                    else
-                        System.out.print(maze3d[d][i][j]);
+        System.out.println("{");
+        for(int depth = 0; depth < maze3d.length; depth++){
+            for(int row = 0; row < maze3d[0].length; row++) {
+                System.out.print("{ ");
+                for (int col = 0; col < maze3d[0][0].length; col++) {
+                    if (depth == startPosition.getDepthIndex() && row == startPosition.getRowIndex() && col == startPosition.getColumnIndex()) // if the position is the start - mark with S
+                        System.out.print("S ");
+                    else {
+                        if (depth == GoalPosition.getDepthIndex() && row == GoalPosition.getRowIndex() && col == GoalPosition.getColumnIndex()) // if the position is the goal - mark with E
+                            System.out.print("E ");
+                        else
+                            System.out.print(maze3d[depth][row][col] + " ");
+                    }
                 }
+                System.out.println("}");
+            }
+            if(depth < maze3d.length - 1) {
+                System.out.print("---");
+                for (int i = 0; i < maze3d[0][0].length; i++)
+                    System.out.print("--");
                 System.out.println();
             }
         }
+        System.out.println("}");
     }
 
 

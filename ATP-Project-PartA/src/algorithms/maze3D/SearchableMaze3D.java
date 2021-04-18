@@ -33,7 +33,9 @@ public class SearchableMaze3D implements ISearchable {
         if (toRow < 0 || toRow >= maze.getRows() || toColumn < 0 || toColumn >= maze.getColumns() || toDepth < 0 || toDepth >= maze.getDepth()
                 || maze.getMaze3d()[toDepth][toRow][toColumn] == 1) {
             return -1;
-        } else {
+        }
+        else
+            {
             return 10;
         }
     }
@@ -52,20 +54,21 @@ public class SearchableMaze3D implements ISearchable {
                 for (int k = -1; k <= 1; k++) {
                     if (i == 0 && j == 0 && k == 0)
                         continue;
-                    if ((i==1 && j==0 && k==0) || (i==0 && j==1 && k==0) || (i==0 && j==0 && k==1)) {
+                    if (((i==1 || i==-1) && j==0 && k==0) || (i==0 && (j==1 || j==-1) && k==0) || (i==0 && j==0 && (k==1 || k==-1))) {
                         int u = z + i;
                         int v = y + j;
                         int w = x + k;
                         int cost = moveCost(u, v, w);
                         if (cost != -1) {
-                            Position3D position = new Position3D(u, v, w);
-                            stateList.add(new Maze3DState(position.getKey(), current, cost + current.getCost()));
+                            Position3D position3D = new Position3D(u, v, w);
+                            stateList.add(new Maze3DState(position3D.getKey(), current, cost + current.getCost()));
                             //System.out.format("In u = %d v = %d getAllSuccessors move = %s \n" ,u,v, position.getKey());
                         }
                     }
                 }
             }
         }
+        //System.out.println(" stateList = "+ stateList.toString());
         return stateList;
     }
 }

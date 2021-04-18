@@ -10,18 +10,17 @@ public class Solution {
         solvedGoal = state;
     }
 
-    public ArrayList<AState> getSolutionPath(){
+    public ArrayList<AState> getSolutionPath() {
         ArrayList<AState> solutionPath = new ArrayList<>();
-        if(solvedGoal != null){
+        if (solvedGoal != null) {
             AState state = solvedGoal;
-            while (state != null){
-                solutionPath.add(0 , state);
+            while (state != null) {
+                solutionPath.add(0, state);
                 state = state.getCameFrom();
             }
         }
         //need to complete
         return solutionPath;
     }
-
 }
 

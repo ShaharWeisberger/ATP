@@ -52,9 +52,9 @@ public class MyMazeGenerator extends AMazeGenerator{
         {
             //random neighbor
             int randomNeighbor = new Random().nextInt(neighbors.size());
-            Position pos = new Position(neighbors.get(randomNeighbor).getRowIndex(),neighbors.get(randomNeighbor).getColumnIndex());
+            Position pos = new Position(neighbors.get(randomNeighbor).getRowIndex(),
+                    neighbors.get(randomNeighbor).getColumnIndex());
             unvisited.clear();
-
 
             if (pos.getRowIndex() + 1 < rows && maze[pos.getRowIndex() + 1][pos.getColumnIndex()] == 0)
                 unvisited.add(new Position(pos.getRowIndex() - 1, pos.getColumnIndex()));

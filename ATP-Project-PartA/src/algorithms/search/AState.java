@@ -75,7 +75,12 @@ public abstract class AState  {
     @Override
     public String toString() {
         String[] arrS= getKey().split("\\$");
-        return "{"+arrS[0]+ "," + arrS[1]+"}";
+        String finalKey ="{";
+        for (int i=0; i<arrS.length-1;i++){
+            finalKey += arrS[i]+",";
+        }
+        finalKey += arrS[arrS.length-1]+"}";
+        return finalKey;
     }
 }
 
