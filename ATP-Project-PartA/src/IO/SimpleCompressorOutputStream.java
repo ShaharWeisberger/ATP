@@ -25,20 +25,22 @@ public class SimpleCompressorOutputStream extends OutputStream {
     }
 
     private byte[] compress(byte[] byteArray) {
-        int bitValue, count = 0, prev = 0;
+        int value, count = 0, prev = 0;
         ArrayList<Byte> byteList = new ArrayList<>();
-        for (int i = 0; i < byteArray.length; i++) {
-            System.out.printf("byteArray[%d] = %x\n",i, byteArray[i]);
-            for (int j = 7; j >= 0; j--) {
-                bitValue = ((byteArray[i] >> j) & 1) == 1 ? 1 : 0;
-                if (bitValue == prev) {
-                    count++;
-                }
-                else{
-                    prev = bitValue;
-                    addCountToByteList(byteList, count);
-                    count = 1;
-                }
+        int asIsByte = getIntFrom2ByteArray(byteArray, 0);
+        for (int i=0; i<asIsByte+2; i++){
+            byteList.add(byteArray[i]);
+            //System.out.printf("byteArray[%d] = %x\n", i, byteArray[i]);
+        }
+        for (int i = asIsByte+2; i < byteArray.length; i++) {
+            //System.out.printf("byteArray[%d] = %x\n", i, byteArray[i]);
+            value = byteArray[i];
+            if (value == prev) {
+                count++;
+            } else {
+                prev = value;
+                addCountToByteList(byteList, count);
+                count = 1;
             }
         }
         if(count != 0) {
@@ -47,11 +49,16 @@ public class SimpleCompressorOutputStream extends OutputStream {
         byte[] data = new byte[byteList.size()];
         for (int i = 0; i < data.length; i++) {
             data[i] = byteList.get(i);
-            System.out.printf("Data[%d] = %x\n",i, data[i]);
+            //System.out.printf("Data[%d] = %x\n",i, data[i]);
         }
+        System.out.println("array after compression : "+data.length);
         return data;
     }
 
+    private int getIntFrom2ByteArray(byte[] byteArray, int startInx) {
+        return ((byteArray[startInx] & 0xFF) << 8) |
+                ((byteArray[startInx +1] & 0xFF) << 0);
+    }
 
     private void addCountToByteList(ArrayList<Byte> byteList, int count) {
         while (count >= 256) {

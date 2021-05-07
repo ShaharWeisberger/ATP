@@ -3,6 +3,7 @@ package IO;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MyCompressorOutputStream extends OutputStream {
 
@@ -22,133 +23,53 @@ public class MyCompressorOutputStream extends OutputStream {
         out.write(compress(b));
     }
 
-    //  first bit == 1 , look at second bit (0 or 1) --> the other bits (3-8) are number of repetition (up to 63 (+6))
-    //  first bit == 0 --> the other bits are taken as is
-
-    // 11100001 -> (33)   11111111111111111111111111111111..
-    // 10100001 -> (33)   00000000000000000000000000000000..
-
-    // 01010101 -> 1010101
-
-    private class CompressEngine {
-        private ArrayList<Byte> byteList;
-        private byte byteBuffer;
-        private int bitCounter;
-        private int count, prev, asIsBitCount;
-        private byte asIsByte;
-        private boolean possibleChain;
-
-        public CompressEngine(ArrayList<Byte> byteList) {
-            this.byteList = byteList;
-            bitCounter = 0;
-            byteBuffer = 0x00;
-            count = 0;
-            prev = 0;
-            asIsBitCount = 0;
-            asIsByte = 0x00;
-            possibleChain = true;
-        }
-
-        private void updateAsIsByte(int value){
-            asIsBitCount ++;
-            // 010000000
-            // 011000000
-            // 011000000
-            // 011010000
-            if (asIsBitCount<=7){
-                asIsByte |= 1 << 7 - asIsBitCount;
-                //put  value in asIsBitCount location in asIsByte
+    private void compressMatrix(byte[] inArray, int startInIndex, List<Byte> outList) {
+        int localCounter = 0;
+        byte currentByte = 0x00;
+        for (int i = startInIndex; i < inArray.length; i++) {
+            if (localCounter == 8) {
+                localCounter = 0;
+                outList.add(currentByte);
+                currentByte = 0x00;
             }
-            // need to implement
-        }
-
-        public void putBit(int bitValue) {
-            updateAsIsByte(bitValue);
-            if (bitValue == prev && possibleChain) {
-                count++;
-                if (count == 63) {
-                    flush();
-                }
+            if (inArray[i] == 1) {
+                currentByte |= 1 << localCounter;
             }
-            else {
-                possibleChain = false;
-                if (count >=7 || asIsBitCount == 7) {
-                    flush();
-                }
-                if (count>=7){
-                    updateAsIsByte(bitValue);
-                }
-                prev = bitValue;
-            }
+            localCounter++;
         }
-
-        //write when MSB equals to 1.
-        public byte createRepeatingByte(int bitValue, int numberOfBits) {
-            byte b = (byte)128;
-            if (bitValue == 1){
-                b += (byte)64;
-            }
-            b += (byte) numberOfBits;
-            return b;
+        if (localCounter > 1) {
+            outList.add(currentByte);
         }
-
-        public void flush() {
-            System.out.println("flush was called ---------");
-            byte newByte = byteBuffer;
-            if (count >= 7) {
-                newByte = createRepeatingByte(prev, count);
-                byteList.add(newByte);
-            } else {
-                if (asIsBitCount > 0) {
-                    newByte = asIsByte;
-                    byteList.add(newByte);
-                }
-            }
-            count = 0;
-            asIsByte = 0x00;
-            possibleChain = true;
-            asIsBitCount = 0;
-        }
-    }
-
-    private int getBitValue(byte b, int index){
-        return ((b >> index) & 1) == 1 ? 1 : 0;
     }
 
     private byte[] compress(byte[] byteArray) {
-        int bitValue;
         ArrayList<Byte> byteList = new ArrayList<>();
-        CompressEngine compressEngine = new CompressEngine(byteList);
-        // 00011100 00000000 00001011 11111111 11110101 11111111
-        for (int i = 0; i < byteArray.length; i++) {
-            System.out.printf("byteArray[%d] = %x\n",i, byteArray[i]);
-            for (int j = 7; j >= 0; j--) {
-                bitValue = getBitValue(byteArray[i], j);
-                compressEngine.putBit(bitValue);
-            }
+        int asIsByte = getIntFrom2ByteArray(byteArray, 0);
+        for (int i = 0; i < asIsByte + 2; i++) {
+            byteList.add(byteArray[i]);
+            //System.out.printf("byteArray[%d] = %x\n", i, byteArray[i]);
         }
-        compressEngine.flush();
+        compressMatrix(byteArray, asIsByte + 2, byteList);
         byte[] data = new byte[byteList.size()];
         for (int i = 0; i < data.length; i++) {
             data[i] = byteList.get(i);
-            System.out.printf("Data[%d] = %s\n",i, Integer.toBinaryString((int)data[i]));
+            //System.out.printf("Data[%d] = %s\n",i, byteToString(data[i]));
         }
+        //System.out.println("array after compression : "+data.length);
         return data;
     }
 
-    /*
-    private void addCountToByteList(ArrayList<Byte> byteList, int count, int bitValue) {
-        byte tempByte= (byte)(69+128);
-        while (count >= 70) {
-            tempByte |= bitValue << 6;
-            byteList.add(tempByte);
-            byteList.add((byte) 0);
-            count -= 69;
-        }
-        tempByte = (byte)(count+128);
-        tempByte |= bitValue << 6;
-        byteList.add(tempByte);
+    private int getIntFrom2ByteArray(byte[] byteArray, int startInx) {
+        return ((byteArray[startInx] & 0xFF) << 8) |
+                ((byteArray[startInx + 1] & 0xFF) << 0);
     }
-     */
+
+    private String byteToString(byte b) {
+        String s = "";
+        for (int i = 7; i >= 0; i--) {
+            s += ((b >> i) & 1) == 1 ? "1" : "0";
+        }
+        return s;
+    }
 }
 

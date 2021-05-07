@@ -15,9 +15,9 @@ public class SimpleDecompressorInputStream extends InputStream{
     public int read() throws IOException {
         return 0;
     }
+/*
+    public int read1(byte[] b) throws IOException {
 
-    @Override
-    public int read(byte[] b) throws IOException {
         //Defining 8x Array to be on the same side (in case all the bits are different from their neighbours).
         byte [] tempArray = new byte[b.length*8];
         in.read(tempArray);
@@ -25,6 +25,19 @@ public class SimpleDecompressorInputStream extends InputStream{
         for (int i = 0; i < byteList.size(); i++) {
             b[i] = byteList.get(i);
             System.out.printf("Decompress Data[%d] = %x\n",i, b[i]);
+        }
+        return byteList.size();
+    }
+    */
+    @Override
+    public int read(byte[] b) throws IOException {
+        //Defining 8x Array to be on the same side (in case all the bits are different from their neighbours).
+        byte [] tempArray = new byte[b.length*8];
+        int size = in.read(tempArray);
+        ArrayList<Byte> byteList = decompress(tempArray, size);
+        for (int i = 0; i < byteList.size(); i++) {
+            b[i] = byteList.get(i);
+            //System.out.printf("Decompress Data[%d] = %x\n",i, b[i]);
         }
         return byteList.size();
     }
@@ -41,39 +54,29 @@ public class SimpleDecompressorInputStream extends InputStream{
         }
 
         public void writeBits(int bitValue, int numberOfBits){
-            //System.out.println("number of bits = "+ numberOfBits);
             for (int i=0; i<numberOfBits; i++){
-                // update relevant bit (in bitCounter)
-                byteBuffer |= bitValue << 7 - bitCounter;
-                if (bitCounter == 7){
-                    flush();
-                }
-                bitCounter ++;
+                byteList.add((byte)bitValue);
             }
         }
-
-        public void flush(){
-            byte newByte = byteBuffer;
-            if (bitCounter>0) {
-                byteList.add(newByte);
-                //System.out.println("adding to byte list");
-                byteBuffer = 0x00;
-                bitCounter = -1;
-            }
-        }
-
     }
 
-    private ArrayList<Byte> decompress(byte [] byteArray) {
-        int bitValue=0;
+    private ArrayList<Byte> decompress(byte [] byteArray, int size) {
+        int value=0;
         ArrayList<Byte> byteList = new ArrayList<>();
         DecompressEngine decompressEngine = new DecompressEngine(byteList);;
-        for (int i=0; i<byteArray.length; i++){
-            decompressEngine.writeBits(bitValue, (int)byteArray[i]);
-            bitValue = bitValue==0?1:0;
+        int asIsBytes = getIntFrom2ByteArray(byteArray, 0);
+        for (int i=0; i<asIsBytes+2; i++){
+            byteList.add(byteArray[i]);
         }
-        decompressEngine.flush();
-        System.out.println("byteList.size = "+byteList.size());
+        for (int i=asIsBytes+2; i<size; i++){
+            decompressEngine.writeBits(value, (int)byteArray[i]);
+            value = value==0?1:0;
+        }
+        //System.out.println("byteList.size = "+size);
         return byteList;
+    }
+    private int getIntFrom2ByteArray(byte[] byteArray, int startInx) {
+        return ((byteArray[startInx] & 0xFF) << 8) |
+                ((byteArray[startInx +1] & 0xFF) << 0);
     }
 }

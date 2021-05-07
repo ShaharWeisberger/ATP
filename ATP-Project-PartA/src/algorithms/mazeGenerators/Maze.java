@@ -24,11 +24,11 @@ public class Maze {
     }
 
     public Maze(byte[] array_of_bytes) {
-        rows = getIntFrom2ByteArray(array_of_bytes, 0);
-        columns = getIntFrom2ByteArray(array_of_bytes, 2);
-        startPosition = new Position(getIntFrom2ByteArray(array_of_bytes, 4), getIntFrom2ByteArray(array_of_bytes, 6));
-        GoalPosition = new Position(getIntFrom2ByteArray(array_of_bytes, 8), getIntFrom2ByteArray(array_of_bytes, 10));
-        maze = getMatrixFromByteArray(array_of_bytes, 12, rows, columns);
+        rows = getIntFrom2ByteArray(array_of_bytes, 2);
+        columns = getIntFrom2ByteArray(array_of_bytes, 4);
+        startPosition = new Position(getIntFrom2ByteArray(array_of_bytes, 6), getIntFrom2ByteArray(array_of_bytes, 8));
+        GoalPosition = new Position(getIntFrom2ByteArray(array_of_bytes, 10), getIntFrom2ByteArray(array_of_bytes, 12));
+        maze = getMatrixFromByteArray(array_of_bytes, 14, rows, columns);
     }
 
     @Override
@@ -80,15 +80,17 @@ public class Maze {
 
 
     public byte[] toByteArray() {
-        int array_size = 16 + (rows * columns) / 8;
+        int array_size = 14 + rows * columns;
         byte[] array_of_bytes = new byte[array_size];
-        copyIntTo2ByteArray(getRows(), array_of_bytes, 0);
-        copyIntTo2ByteArray(getColumns(), array_of_bytes, 2);
-        copyIntTo2ByteArray(getStartPosition().getRowIndex(), array_of_bytes, 4);
-        copyIntTo2ByteArray(getStartPosition().getColumnIndex(), array_of_bytes, 6);
-        copyIntTo2ByteArray(getGoalPosition().getRowIndex(), array_of_bytes, 8);
-        copyIntTo2ByteArray(getGoalPosition().getColumnIndex(), array_of_bytes, 10);
-        copyMatrixToByteArray(getMaze(), array_of_bytes, 12);
+        copyIntTo2ByteArray(12, array_of_bytes, 0);
+        copyIntTo2ByteArray(getRows(), array_of_bytes, 2);
+        copyIntTo2ByteArray(getColumns(), array_of_bytes, 4);
+        copyIntTo2ByteArray(getStartPosition().getRowIndex(), array_of_bytes, 6);
+        copyIntTo2ByteArray(getStartPosition().getColumnIndex(), array_of_bytes, 8);
+        copyIntTo2ByteArray(getGoalPosition().getRowIndex(), array_of_bytes, 10);
+        copyIntTo2ByteArray(getGoalPosition().getColumnIndex(), array_of_bytes, 12);
+        copyMatrixToByteArray(getMaze(), array_of_bytes, 14);
+        System.out.println("array before compression : "+array_of_bytes.length);
         return array_of_bytes;
     }
 
@@ -118,38 +120,22 @@ public class Maze {
                 ((byteArray[startInx + 3] & 0xFF) << 0);
     }
 
-
     private void copyMatrixToByteArray(int[][] maze, byte[] arrayOfBytes, int startIndex) {
-        int localCounter = 0;
         int byteIndex = startIndex;
         arrayOfBytes[byteIndex] = 0x00;
         for (int i = 0; i < maze.length; i++) {
             for (int j = 0; j < maze[0].length; j++) {
-                if (localCounter == 8) {
-                    localCounter = 0;
-                    byteIndex++;
-                    arrayOfBytes[byteIndex] = 0x00;
-                }
-                if (maze[i][j] == 1) {
-                    arrayOfBytes[byteIndex] |= 1 << localCounter;
-                }
-                localCounter++;
+                arrayOfBytes[byteIndex++] = (byte) maze[i][j];
             }
         }
     }
 
     private int[][] getMatrixFromByteArray(byte[] arrayOfBytes, int startIndex, int rows, int columns) {
-        int localCounter = 0;
         int byteIndex = startIndex;
         int[][] matrix = new int[rows][columns];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                if (localCounter == 8) {
-                    localCounter = 0;
-                    byteIndex++;
-                }
-                matrix[i][j] = ((arrayOfBytes[byteIndex] >> localCounter) & 1) == 1 ? 1 : 0;
-                localCounter++;
+                matrix[i][j] = arrayOfBytes[byteIndex++];
             }
         }
         return matrix;
