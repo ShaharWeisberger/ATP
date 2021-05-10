@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class Maze {
+public class Maze implements java.io.Serializable{
 
     private int[][] maze;
     private int rows;

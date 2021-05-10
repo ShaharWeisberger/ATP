@@ -2,7 +2,7 @@ package algorithms.search;
 
 import java.util.ArrayList;
 
-public class Solution {
+public class Solution implements java.io.Serializable{
 
     private AState solvedGoal;
 

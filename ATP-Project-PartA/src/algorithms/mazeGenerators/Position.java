@@ -1,6 +1,6 @@
 package algorithms.mazeGenerators;
 
-public class Position {
+public class Position implements java.io.Serializable{
 
     private int rowIndex;
     private  int columnIndex;
